@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at BscScan.com on 2021-12-21
-*/
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
@@ -42,8 +38,8 @@ contract BABYV2Token is Context, IERC20, Ownable {
   constructor() {
     _name = 'Babylonia Token';
     _symbol = 'BABY';
-    _decimals = 10;
-    _totalSupply = 888888888 * 10**10; // 888m
+    _decimals = 18;
+    _totalSupply = 888888888 * 10**18; // 888m
     _balances[msg.sender] = _totalSupply;
 
     emit Transfer(address(0), msg.sender, _totalSupply);
