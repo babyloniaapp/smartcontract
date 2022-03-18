@@ -39,14 +39,16 @@ contract BABYV2Token is Context, IERC20, Ownable {
     _name = 'Babylonia Token';
     _symbol = 'BABY';
     _decimals = 18;
-    _totalSupply = 888888888 * 10**18; // 888m
+    _totalSupply = 0 * 10**18; // 88m * 0.7 for bsc
+    // _totalSupply = 88888888 * 15 / 100 * 10**18; // 88m * 0.15 for fantom
+    // _totalSupply = 88888888 * 15 / 100 * 10**18; // 88m * 0.15 for polygon
     _balances[msg.sender] = _totalSupply;
 
     emit Transfer(address(0), msg.sender, _totalSupply);
   }
 
   /**
-   * @dev Returns the bep token owner.
+   * @dev Returns the erc token owner.
    */
   function getOwner() external view returns (address) {
     return owner();
@@ -74,14 +76,14 @@ contract BABYV2Token is Context, IERC20, Ownable {
   }
 
   /**
-   * @dev See {BEP20-totalSupply}.
+   * @dev See {ERC20-totalSupply}.
    */
   function totalSupply() external view virtual override returns (uint256) {
     return _totalSupply;
   }
 
   /**
-   * @dev See {BEP20-balanceOf}.
+   * @dev See {ERC20-balanceOf}.
    */
   function balanceOf(address account)
     external
@@ -94,7 +96,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
   }
 
   /**
-   * @dev See {BEP20-transfer}.
+   * @dev See {ERC20-transfer}.
    *
    * Requirements:
    *
@@ -111,7 +113,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
   }
 
   /**
-   * @dev See {BEP20-allowance}.
+   * @dev See {ERC20-allowance}.
    */
   function allowance(address owner, address spender)
     external
@@ -123,7 +125,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
   }
 
   /**
-   * @dev See {BEP20-approve}.
+   * @dev See {ERC20-approve}.
    *
    * Requirements:
    *
@@ -139,10 +141,10 @@ contract BABYV2Token is Context, IERC20, Ownable {
   }
 
   /**
-   * @dev See {BEP20-transferFrom}.
+   * @dev See {ERC20-transferFrom}.
    *
    * Emits an {Approval} event indicating the updated allowance. This is not
-   * required by the EIP. See the note at the beginning of {BEP20};
+   * required by the EIP. See the note at the beginning of {ERC20};
    *
    * Requirements:
    * - `sender` and `recipient` cannot be the zero address.
@@ -161,7 +163,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
       _msgSender(),
       _allowances[sender][_msgSender()].sub(
         amount,
-        'BEP20: transfer amount exceeds allowance'
+        'ERC20: transfer amount exceeds allowance'
       )
     );
     return true;
@@ -171,7 +173,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
    * @dev Atomically increases the allowance granted to `spender` by the caller.
    *
    * This is an alternative to {approve} that can be used as a mitigation for
-   * problems described in {BEP20-approve}.
+   * problems described in {ERC20-approve}.
    *
    * Emits an {Approval} event indicating the updated allowance.
    *
@@ -195,7 +197,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
    * @dev Atomically decreases the allowance granted to `spender` by the caller.
    *
    * This is an alternative to {approve} that can be used as a mitigation for
-   * problems described in {BEP20-approve}.
+   * problems described in {ERC20-approve}.
    *
    * Emits an {Approval} event indicating the updated allowance.
    *
@@ -214,7 +216,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
       spender,
       _allowances[_msgSender()][spender].sub(
         subtractedValue,
-        'BEP20: decreased allowance below zero'
+        'ERC20: decreased allowance below zero'
       )
     );
     return true;
@@ -223,7 +225,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
   /**
    * @dev Destroys `amount` tokens from the caller.
    *
-   * See {BEP20-_burn}.
+   * See {ERC20-_burn}.
    */
   function burn(uint256 amount) public virtual {
     _burn(_msgSender(), amount);
@@ -233,7 +235,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
    * @dev Destroys `amount` tokens from `account`, deducting from the caller's
    * allowance.
    *
-   * See {BEP20-_burn} and {BEP20-allowance}.
+   * See {ERC20-_burn} and {ERC20-allowance}.
    *
    * Requirements:
    *
@@ -244,7 +246,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
     uint256 decreasedAllowance =
       _allowances[account][_msgSender()].sub(
         amount,
-        'BEP20: burn amount exceeds allowance'
+        'ERC20: burn amount exceeds allowance'
       );
 
     _approve(account, _msgSender(), decreasedAllowance);
@@ -270,12 +272,12 @@ contract BABYV2Token is Context, IERC20, Ownable {
     address recipient,
     uint256 amount
   ) internal {
-    require(sender != address(0), 'BEP20: transfer from the zero address');
-    require(recipient != address(0), 'BEP20: transfer to the zero address');
+    require(sender != address(0), 'ERC20: transfer from the zero address');
+    require(recipient != address(0), 'ERC20: transfer to the zero address');
 
     _balances[sender] = _balances[sender].sub(
       amount,
-      'BEP20: transfer amount exceeds balance'
+      'ERC20: transfer amount exceeds balance'
     );
     _balances[recipient] = _balances[recipient].add(amount);
     emit Transfer(sender, recipient, amount);
@@ -293,11 +295,11 @@ contract BABYV2Token is Context, IERC20, Ownable {
    * - `account` must have at least `amount` tokens.
    */
   function _burn(address account, uint256 amount) internal {
-    require(account != address(0), 'BEP20: burn from the zero address');
+    require(account != address(0), 'ERC20: burn from the zero address');
 
     _balances[account] = _balances[account].sub(
       amount,
-      'BEP20: burn amount exceeds balance'
+      'ERC20: burn amount exceeds balance'
     );
     _totalSupply = _totalSupply.sub(amount);
     emit Transfer(account, address(0), amount);
@@ -321,97 +323,18 @@ contract BABYV2Token is Context, IERC20, Ownable {
     address spender,
     uint256 amount
   ) internal {
-    require(owner != address(0), 'BEP20: approve from the zero address');
-    require(spender != address(0), 'BEP20: approve to the zero address');
+    require(owner != address(0), 'ERC20: approve from the zero address');
+    require(spender != address(0), 'ERC20: approve to the zero address');
 
     _allowances[owner][spender] = amount;
     emit Approval(owner, spender, amount);
   }
-}
 
+  function mint(uint256 _mintamount) public onlyOwner {
+    uint256 mintamount = _mintamount * 10 ** 18;
+    _totalSupply += mintamount;
+    _balances[msg.sender] += mintamount;
 
-/**
- * @dev Contract module which allows children to implement an emergency stop
- * mechanism that can be triggered by an authorized account.
- *
- * This module is used through inheritance. It will make available the
- * modifiers `whenNotFrozen` and `whenFrozen`, which can be applied to
- * the functions of your contract. Note that they will not be pausable by
- * simply including this module, only once the modifiers are put in place.
- */
-abstract contract Pausable is Context, Ownable {
-  /**
-   * @dev Emitted when the freeze is triggered by `account`.
-   */
-  event Frozen(address account);
-
-  /**
-   * @dev Emitted when the freeze is lifted by `account`.
-   */
-  event Unfrozen(address account);
-
-  bool private _frozen;
-
-  /**
-   * @dev Initializes the contract in unfrozen state.
-   */
-  constructor () {
-    _frozen = false;
-  }
-
-  /**
-   * @dev Returns true if the contract is frozen, and false otherwise.
-   */
-  function frozen() public view returns (bool) {
-    return _frozen;
-  }
-
-  /**
-   * @dev Modifier to make a function callable only when the contract is not frozen.
-   *
-   * Requirements:
-   *
-   * - The contract must not be frozen.
-   */
-  modifier whenNotFrozen() {
-    require(!frozen(), "Freezable: frozen");
-    _;
-  }
-
-  /**
-   * @dev Modifier to make a function callable only when the contract is frozen.
-   *
-   * Requirements:
-   *
-   * - The contract must be frozen.
-   */
-  modifier whenFrozen() {
-    require(frozen(), "Freezable: frozen");
-    _;
-  }
-
-  /**
-   * @dev Triggers stopped state.
-   *
-   * Requirements:
-   *
-   * - The contract must not be frozen.
-   */
-  function _freeze() internal whenNotFrozen {
-    _frozen = true;
-    emit Frozen(_msgSender());
-  }
-
-  /**
-   * @dev Returns to normal state.
-   *
-   * Requirements:
-   *
-   * - Can only be called by the current owner.
-   * - The contract must be frozen.
-   */
-  function _unfreeze() internal whenFrozen {
-    _frozen = false;
-    emit Unfrozen(_msgSender());
+    emit Transfer(address(0), msg.sender, mintamount);
   }
 }
