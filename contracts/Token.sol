@@ -39,9 +39,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
     _name = 'Babylonia Token';
     _symbol = 'BABY';
     _decimals = 18;
-    _totalSupply = 0 * 10**18; // 88m * 0.7 for bsc
-    // _totalSupply = 88888888 * 15 / 100 * 10**18; // 88m * 0.15 for fantom
-    // _totalSupply = 88888888 * 15 / 100 * 10**18; // 88m * 0.15 for polygon
+    _totalSupply = 0 * 10**18;
     _balances[msg.sender] = _totalSupply;
 
     emit Transfer(address(0), msg.sender, _totalSupply);

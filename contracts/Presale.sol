@@ -30,7 +30,7 @@ contract Presale is Ownable, ReentrancyGuard {
     address public masterWallet;
     uint256 public totalDepositedBusdBalance;
 
-    uint256 public depositRate = 200; // 1 busd = 200 * baby
+    uint256 public depositRate = 100; // 1 busd = 100 * baby
     uint256 public startTime;
     uint256 public endTime;
 
