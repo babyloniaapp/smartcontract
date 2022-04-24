@@ -31,18 +31,16 @@ contract BABYV2Token is Context, IERC20, Ownable {
   mapping(address => mapping(address => uint256)) private _allowances;
 
   uint256 private _totalSupply;
-  uint8 public _decimals;
-  string public _symbol;
-  string public _name;
+  uint8 private _decimals;
+  string private _symbol;
+  string private _name;
+  uint256 private _maxSupply;
 
   constructor() {
     _name = 'Babylonia Token';
     _symbol = 'BABY';
     _decimals = 18;
-    _totalSupply = 0 * 10**18;
-    _balances[msg.sender] = _totalSupply;
-
-    emit Transfer(address(0), msg.sender, _totalSupply);
+    _maxSupply = 888888888 * 10 ** _decimals;
   }
 
   /**
@@ -180,7 +178,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
    * - `spender` cannot be the zero address.
    */
   function increaseAllowance(address spender, uint256 addedValue)
-    public
+    external
     returns (bool)
   {
     _approve(
@@ -206,7 +204,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
    * `subtractedValue`.
    */
   function decreaseAllowance(address spender, uint256 subtractedValue)
-    public
+    external
     returns (bool)
   {
     _approve(
@@ -225,7 +223,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
    *
    * See {ERC20-_burn}.
    */
-  function burn(uint256 amount) public virtual {
+  function burn(uint256 amount) external virtual {
     _burn(_msgSender(), amount);
   }
 
@@ -240,7 +238,7 @@ contract BABYV2Token is Context, IERC20, Ownable {
    * - the caller must have allowance for ``accounts``'s tokens of at least
    * `amount`.
    */
-  function burnFrom(address account, uint256 amount) public virtual {
+  function burnFrom(address account, uint256 amount) external virtual {
     uint256 decreasedAllowance =
       _allowances[account][_msgSender()].sub(
         amount,
@@ -328,7 +326,8 @@ contract BABYV2Token is Context, IERC20, Ownable {
     emit Approval(owner, spender, amount);
   }
 
-  function mint(uint256 _mintamount) public onlyOwner {
+  function mint(uint256 _mintamount) external onlyOwner {
+    require(_maxSupply > _mintamount * 10 ** _decimals + _totalSupply, "Cannot be more than MaxSupply");
     uint256 mintamount = _mintamount * 10 ** 18;
     _totalSupply += mintamount;
     _balances[msg.sender] += mintamount;
