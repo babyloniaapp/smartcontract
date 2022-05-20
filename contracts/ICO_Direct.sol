@@ -80,7 +80,7 @@ interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-contract ICO_FALLBACK is Ownable {
+contract ICO is Ownable {
     event BABYTOKENAMOUNT(uint256 amount);
 
     using SafeMath for uint256;
