@@ -88,23 +88,32 @@ contract ICO is Ownable {
     IERC20 private _baby;
     address private _masterWallet;
     uint256 private _swapRate;
-    uint256 private _hardCap = 3 * 10 ** 18;
+    uint256 private _babyHardCap;
 
     constructor(IERC20 baby, address masterWallet) {
         require(address(baby) != address(0), "BABY cannot be zero address");
         require(masterWallet != address(0), "Masterwallet cannot be zero address");
         _baby = baby;
         _masterWallet = masterWallet;
-        _swapRate = 300 * 1000;
+        _swapRate = 10000;
+        _babyHardCap = 1000 * 10 ** _baby.decimals();
     }
 
     receive() external payable {
         uint256 babyTokenAmount = 0;
+        uint256 senderBalance = _baby.balanceOf(msg.sender);
+
         babyTokenAmount = msg.value.mul(10 ** _baby.decimals()).div(10 ** 18).mul(_swapRate);
-        if (msg.value > _hardCap || _baby.balanceOf(_masterWallet) < babyTokenAmount)
+
+        if (senderBalance + babyTokenAmount > _babyHardCap) {
             payable(msg.sender).transfer(msg.value);
-        else
+            revert();
+        } else if (_baby.balanceOf(_masterWallet) < babyTokenAmount)
+            payable(msg.sender).transfer(msg.value);
+        else {
             _baby.transferFrom(_masterWallet, msg.sender, babyTokenAmount);
+            payable(_masterWallet).transfer(msg.value);
+        }
     }
 
     function setBabyAddress(IERC20 baby) external onlyOwner{
@@ -122,8 +131,24 @@ contract ICO is Ownable {
         _swapRate = _rate;
     }
 
-    function withdraw() external payable onlyOwner {
-        require(_masterWallet != address(0), "Cannot be zero address");
-        payable(_masterWallet).transfer(address(this).balance);
+    function setBabyHardCap(uint256 _hardCap) external onlyOwner {
+        require(_hardCap > 0, "Hardcap should be more than 0");
+        _babyHardCap = _hardCap;
+    }
+
+    function getBabyAddress() external view returns(address){
+        return address(_baby);
+    }
+
+    function getMasterWalletAddress() external view returns(address){
+        return _masterWallet;
+    }
+
+    function getSwapRate() external view returns(uint256) {
+        return _swapRate;
+    }
+
+    function getBabyHardCap() external view returns(uint256) {
+        return _babyHardCap;
     }
 }
