@@ -149,6 +149,19 @@ contract ICO is Ownable {
         _babyHardCap = _hardCap;
     }
 
+        function setStartTime(uint256 _time) external onlyOwner {
+        require(_time != 0, "Cannot be zero");
+        _startTime = _time;
+    }
+
+    // setEndTime function
+    function setEndTime(uint256 _etime) external onlyOwner {
+        require(_etime > _startTime, "Cannot be zero");
+        _endTime = _etime;
+    }
+
+
+
     function getBabyAddress() external view returns(address){
         return address(_baby);
     }
@@ -165,11 +178,6 @@ contract ICO is Ownable {
         return _babyHardCap;
     }
 
-    function setStartTime(uint256 _time) external onlyOwner {
-        require(_time != 0, "Cannot be zero");
-        _startTime = _time;
-    }
-
     function getStartTime() external view returns(uint256) {
         return _startTime;
     }
@@ -178,13 +186,8 @@ contract ICO is Ownable {
         return _endTime;
     }
 
-    // setEndTime function
-    function setEndTime(uint256 _etime) external onlyOwner {
-        require(_etime > _startTime, "Cannot be zero");
-        _endTime = _etime;
+    function getPresaleEnabled() external view returns(bool) {
+        return _presaleEnabled;
     }
 
-    function getPeriod() external view returns(uint256) {
-        return _endTime - _startTime;
-    }
-}
+   }
