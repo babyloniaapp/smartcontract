@@ -1,0 +1,213 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.7;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
+interface IERC20 {
+
+    function decimals() external view returns (uint8);
+    /**
+    * @dev Returns the amount of tokens in existence.
+    */
+    function totalSupply() external view returns (uint256);
+
+    /**
+    * @dev Returns the amount of tokens owned by `account`.
+    */
+    function balanceOf(address account) external view returns (uint256);
+
+    /**
+    * @dev Moves `amount` tokens from the caller's account to `recipient`.
+    *
+    * Returns a boolean value indicating whether the operation succeeded.
+    *
+    * Emits a {Transfer} event.
+    */
+    function transfer(address recipient, uint256 amount) external returns (bool);
+
+    /**
+    * @dev Returns the remaining number of tokens that `spender` will be
+    * allowed to spend on behalf of `owner` through {transferFrom}. This is
+    * zero by default.
+    *
+    * This value changes when {approve} or {transferFrom} are called.
+    */
+    function allowance(address owner, address spender) external view returns (uint256);
+
+    /**
+    * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+    *
+    * Returns a boolean value indicating whether the operation succeeded.
+    *
+    * IMPORTANT: Beware that changing an allowance with this method brings the risk
+    * that someone may use both the old and the new allowance by unfortunate
+    * transaction ordering. One possible solution to mitigate this race
+    * condition is to first reduce the spender's allowance to 0 and set the
+    * desired value afterwards:
+    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+    *
+    * Emits an {Approval} event.
+    */
+    function approve(address spender, uint256 amount) external returns (bool);
+
+    /**
+    * @dev Moves `amount` tokens from `sender` to `recipient` using the
+    * allowance mechanism. `amount` is then deducted from the caller's
+    * allowance.
+    *
+    * Returns a boolean value indicating whether the operation succeeded.
+    *
+    * Emits a {Transfer} event.
+    */
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
+
+    /**
+    * @dev Emitted when `value` tokens are moved from one account (`from`) to
+    * another (`to`).
+    *
+    * Note that `value` may be zero.
+    */
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    /**
+    * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+    * a call to {approve}. `value` is the new allowance.
+    */
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+}
+
+//  0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE mainnet
+// 	0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526 testnet
+contract ICO is Ownable {
+    event BABYTOKENAMOUNT(uint256 amount);
+
+    using SafeMath for uint256;
+    AggregatorV3Interface internal priceFeed;
+
+    IERC20 private _baby;
+    address private _masterWallet;
+    // uint256 private _swapRate;
+    uint256 public _bnbPrice;
+    uint256 private _babyHardCap;
+    uint256 private _startTime;
+    uint256 private _endTime;       // Added _endTime variable
+    bool public _presaleEnabled;    // Added _presaleEnabled variable
+
+    constructor(IERC20 baby, address masterWallet) {
+        require(address(baby) != address(0), "BABY cannot be zero address");
+        require(masterWallet != address(0), "Masterwallet cannot be zero address");
+        _baby = baby;
+        _masterWallet = masterWallet;
+        // _swapRate = 10000;
+        _babyHardCap = 1000 * 10 ** _baby.decimals();
+        _startTime = block.timestamp;
+        _endTime = block.timestamp + (30 * 1 days);
+        _presaleEnabled = true;
+        priceFeed = AggregatorV3Interface(0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526);
+    }
+
+    // Presale enabled function
+    function setPresaleEnabled(bool _enabled) external onlyOwner{
+        _presaleEnabled = _enabled;
+    }
+
+    receive() external payable {
+        uint256 swapRate=  getLatestPrice();
+        _bnbPrice =getLatestPrice();
+
+        if(!_presaleEnabled) revert();      // check if presale enabled, unless reverts the txn
+        if (!(block.timestamp > _startTime && block.timestamp < _endTime)) revert();
+        
+        uint256 babyTokenAmount = 0;
+        uint256 senderBalance = _baby.balanceOf(msg.sender);
+
+        babyTokenAmount = msg.value.mul(10 ** _baby.decimals()).div(10 ** 18).mul(swapRate);
+        if (senderBalance + babyTokenAmount > _babyHardCap) {
+            payable(msg.sender).transfer(msg.value);
+            revert();
+        } else if (_baby.balanceOf(_masterWallet) < babyTokenAmount)
+            payable(msg.sender).transfer(msg.value);
+        else {
+            _baby.transferFrom(_masterWallet, msg.sender, babyTokenAmount);
+            payable(_masterWallet).transfer(msg.value);
+        }
+    }
+
+    function setBabyAddress(IERC20 baby) external onlyOwner{
+        require(address(baby) != address(0), "BABY cannot be zero address");
+        _baby = baby;
+    }
+
+    function setMasterWalletAddress(address masterWallet) external onlyOwner{
+        require(masterWallet != address(0), "Masterwallet cannot be zero address");
+        _masterWallet = masterWallet;
+    }
+
+    // function setSwapRate(uint256 _rate) external onlyOwner {
+    //     require(_swapRate > 0, "Rate should be more than 0");
+    //     _swapRate = _rate;
+    // }
+
+    function setBabyHardCap(uint256 _hardCap) external onlyOwner {
+        require(_hardCap > 0, "Hardcap should be more than 0");
+        _babyHardCap = _hardCap;
+    }
+
+    function setStartTime(uint256 _time) external onlyOwner {
+        require(_time != 0, "Cannot be zero");
+        _startTime = _time;
+    }
+
+    // setEndTime function
+    function setEndTime(uint256 _etime) external onlyOwner {
+        require(_etime > _startTime, "Cannot be zero");
+        _endTime = _etime;
+    }
+
+
+
+    function getBabyAddress() external view returns(address){
+        return address(_baby);
+    }
+
+    function getMasterWalletAddress() external view returns(address){
+        return _masterWallet;
+    }
+
+    // function getSwapRate() external view returns(uint256) {
+    //     return _swapRate;
+    // }
+
+    function getBabyHardCap() external view returns(uint256) {
+        return _babyHardCap;
+    }
+
+    function getStartTime() external view returns(uint256) {
+        return _startTime;
+    }
+
+    function getEndTime() external view returns(uint256) {
+        return _endTime;
+    }
+
+    function getPresaleEnabled() external view returns(bool) {
+        return _presaleEnabled;
+    }
+    function getLatestPrice() public view returns (uint256) {
+        (
+            /*uint80 roundID*/,
+            int price,
+            /*uint startedAt*/,
+            /*uint timeStamp*/,
+            /*uint80 answeredInRound*/
+        ) = priceFeed.latestRoundData();
+        // _bnbPrice= price;
+        return uint256(price/10**6);
+    }
+
+}
