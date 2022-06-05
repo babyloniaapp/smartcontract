@@ -89,6 +89,8 @@ contract ICO is Ownable {
     address private _masterWallet;
     uint256 private _swapRate;
     uint256 private _babyHardCap;
+    uint256 private _startTime;
+    uint256 private _presalePeriod = 30 days;
 
     constructor(IERC20 baby, address masterWallet) {
         require(address(baby) != address(0), "BABY cannot be zero address");
@@ -97,14 +99,16 @@ contract ICO is Ownable {
         _masterWallet = masterWallet;
         _swapRate = 10000;
         _babyHardCap = 1000 * 10 ** _baby.decimals();
+        _startTime = block.timestamp;
     }
 
     receive() external payable {
+        if (!(block.timestamp > _startTime && block.timestamp < _startTime + _presalePeriod)) revert();
+        
         uint256 babyTokenAmount = 0;
         uint256 senderBalance = _baby.balanceOf(msg.sender);
 
         babyTokenAmount = msg.value.mul(10 ** _baby.decimals()).div(10 ** 18).mul(_swapRate);
-
         if (senderBalance + babyTokenAmount > _babyHardCap) {
             payable(msg.sender).transfer(msg.value);
             revert();
@@ -150,5 +154,27 @@ contract ICO is Ownable {
 
     function getBabyHardCap() external view returns(uint256) {
         return _babyHardCap;
+    }
+
+    function setStartTime(uint256 _time) external onlyOwner {
+        require(_time != 0, "Cannot be zero");
+        _startTime = _time;
+    }
+
+    function getStartTime() external view returns(uint256) {
+        return _startTime;
+    }
+
+    function getEndTime() external view returns(uint256) {
+        return _startTime + _presalePeriod;
+    }
+
+    function setPeriod(uint256 _period) external onlyOwner {
+        require(_period != 0, "Cannot be zero");
+        _presalePeriod = _period;
+    }
+
+    function getPeriod() external view returns(uint256) {
+        return _presalePeriod;
     }
 }
