@@ -123,7 +123,7 @@ contract ICO is Ownable {
         if(swapRate <=0){
             swapRate= _bnbUpperLimit;
         }
-        _bnbPrice =getLatestPrice();
+        _bnbPrice =swapRate;
 
         if(!_presaleEnabled) revert();      // check if presale enabled, unless reverts the txn
         if (!(block.timestamp > _startTime && block.timestamp < _endTime)) revert();
