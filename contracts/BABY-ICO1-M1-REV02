@@ -793,13 +793,13 @@ contract Presale is Ownable, ReentrancyGuard {
 
     constructor(IERC20 _busd, IERC20 _baby, address _masterWallet) {
         require(address(_busd) != address(0), "BUSD address should not be zero address");
-      //  require(address(_usdt) != address(0), "USDT address should not be zero address");
-      // require(address(_usdc) != address(0), "USDC address should not be zero address");
+        require(address(_usdt) != address(0), "USDT address should not be zero address");
+        require(address(_usdc) != address(0), "USDC address should not be zero address");
         require(address(_baby) != address(0), "BABY address should not be zero address");
         require(_masterWallet != address(0), "Master wallet address should not be zero address");
         busd = _busd;
-       // usdt = _usdt;
-       // usdc = _usdc;
+        usdt = _usdt;
+        usdc = _usdc;
         baby = _baby;
         masterWallet = _masterWallet;
 
@@ -859,13 +859,15 @@ contract Presale is Ownable, ReentrancyGuard {
         emit Deposited(msg.sender, _amount);
     }
 
-    function updateBUSDToken(IERC20 _busd) external onlyOwner{
-        require(address(_busd) != address(0), "OldVgdToken address should not be zero address");
-        busd = _busd;
+    function updateBUSDToken(IERC20 _addr, uint256 _type) external onlyOwner{
+        require(address(_addr) != address(0), "Token address should not be zero address");
+        if(_type == 0) busd = _addr;
+        else if(_type == 1) usdt = _addr;
+        else if(_type == 2) usdc = _addr;
     }
 
     function updatebabyToken(IERC20 _baby) external onlyOwner{
-        require(address(_baby) != address(0), "OldVgdToken address should not be zero address");
+        require(address(_baby) != address(0), "Baby token address should not be zero address");
         baby = _baby;
     }
 
@@ -874,6 +876,8 @@ contract Presale is Ownable, ReentrancyGuard {
         masterWallet = _newWalletAddr;
     }
 
- 
+    function extendEndTime(uint256 _extendDays) external onlyOwner {
+        endTime = endTime + (_extendDays * 1 days);
+    }
 
 }
