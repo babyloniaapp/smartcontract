@@ -89,10 +89,11 @@ contract ICO is Ownable {
     using SafeMath for uint256;
     AggregatorV3Interface internal priceFeed;
 
-    IERC20 private _baby;
+    IERC20 private _baby; 
     address private _masterWallet;
-    // uint256 private _swapRate;
     uint256 public _bnbPrice;
+    uint256 public _bnbLowerLimit;
+    uint256 public _bnbUpperLimit;
     uint256 private _babyHardCap;
     uint256 private _startTime;
     uint256 private _endTime;       // Added _endTime variable
@@ -103,12 +104,13 @@ contract ICO is Ownable {
         require(masterWallet != address(0), "Masterwallet cannot be zero address");
         _baby = baby;
         _masterWallet = masterWallet;
-        // _swapRate = 10000;
         _babyHardCap = 1000 * 10 ** _baby.decimals();
         _startTime = block.timestamp;
         _endTime = block.timestamp + (30 * 1 days);
         _presaleEnabled = true;
         priceFeed = AggregatorV3Interface(0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526);
+        _bnbLowerLimit= 250*100;
+        _bnbUpperLimit= 350*100;
     }
 
     // Presale enabled function
@@ -118,6 +120,9 @@ contract ICO is Ownable {
 
     receive() external payable {
         uint256 swapRate=  getLatestPrice();
+        if(swapRate <=0){
+            swapRate= _bnbUpperLimit;
+        }
         _bnbPrice =getLatestPrice();
 
         if(!_presaleEnabled) revert();      // check if presale enabled, unless reverts the txn
@@ -148,11 +153,6 @@ contract ICO is Ownable {
         _masterWallet = masterWallet;
     }
 
-    // function setSwapRate(uint256 _rate) external onlyOwner {
-    //     require(_swapRate > 0, "Rate should be more than 0");
-    //     _swapRate = _rate;
-    // }
-
     function setBabyHardCap(uint256 _hardCap) external onlyOwner {
         require(_hardCap > 0, "Hardcap should be more than 0");
         _babyHardCap = _hardCap;
@@ -168,9 +168,13 @@ contract ICO is Ownable {
         require(_etime > _startTime, "Cannot be zero");
         _endTime = _etime;
     }
+    // Here we can update the BNB lower and upper limit.
+    function setBnblimit(uint256 _bnblowerlimit,uint256 _bnbupperlimit) external onlyOwner{
+        _bnbLowerLimit =_bnblowerlimit;
+        _bnbUpperLimit = _bnbupperlimit;
 
-
-
+    } 
+    
     function getBabyAddress() external view returns(address){
         return address(_baby);
     }
@@ -178,10 +182,6 @@ contract ICO is Ownable {
     function getMasterWalletAddress() external view returns(address){
         return _masterWallet;
     }
-
-    // function getSwapRate() external view returns(uint256) {
-    //     return _swapRate;
-    // }
 
     function getBabyHardCap() external view returns(uint256) {
         return _babyHardCap;
