@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.14;
 
 /**
  * @dev Provides information about the current execution context, including the
@@ -794,8 +794,8 @@ contract Presale is Ownable, ReentrancyGuard {
 
     constructor(IERC20 _busd, IERC20 _usdt, IERC20 _usdc, IERC20 _baby, address _masterWallet) {
         require(address(_busd) != address(0), "BUSD address should not be zero address");
-        require(address(_usdt) != address(0), "BUSD address should not be zero address");
-        require(address(_usdc) != address(0), "BUSD address should not be zero address");
+        require(address(_usdt) != address(0), "USDT address should not be zero address");
+        require(address(_usdc) != address(0), "USDC address should not be zero address");
         require(address(_baby) != address(0), "BABY address should not be zero address");
         require(_masterWallet != address(0), "Master wallet address should not be zero address");
         busd = _busd;
