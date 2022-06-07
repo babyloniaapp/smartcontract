@@ -834,19 +834,19 @@ contract Presale is Ownable, ReentrancyGuard {
         if (_type == 0) {
             _tokenDecimals = busd.decimals();
             babyTokenAmount = _amount.mul(depositRate).mul(10 ** baby.decimals()).div(10 ** _tokenDecimals);
-            require((baby.balanceOf(msg.sender) + babyTokenAmount) <= 10000 * 10 ** 18, "Cannot hold more than 10000 $baby in your wallet");
+            require((baby.balanceOf(msg.sender) + babyTokenAmount) <= 100000 * 10 ** 18, "Cannot hold more than 100000 $BABY in your wallet");
             busd.safeTransferFrom(msg.sender, masterWallet, _amount);
         }
         else if (_type == 1) {
             _tokenDecimals = usdt.decimals();
             babyTokenAmount = _amount.mul(depositRate).mul(10 ** baby.decimals()).div(10 ** _tokenDecimals);
-            require((baby.balanceOf(msg.sender) + babyTokenAmount) <= 10000 * 10 ** 18, "Cannot hold more than 10000 $baby in your wallet");
+            require((baby.balanceOf(msg.sender) + babyTokenAmount) <= 100000 * 10 ** 18, "Cannot hold more than 100000 $BABY in your wallet");
             usdt.safeTransferFrom(msg.sender, masterWallet, _amount);
         }
         else {
             _tokenDecimals = usdc.decimals();
             babyTokenAmount = _amount.mul(depositRate).mul(10 ** baby.decimals()).div(10 ** _tokenDecimals);
-            require((baby.balanceOf(msg.sender) + babyTokenAmount) <= 10000 * 10 ** 18, "Cannot hold more than 10000 $baby in your wallet");
+            require((baby.balanceOf(msg.sender) + babyTokenAmount) <= 100000 * 10 ** 18, "Cannot hold more than 100000 $BABY in your wallet");
             usdc.safeTransferFrom(msg.sender, masterWallet, _amount);
         }
 
@@ -861,7 +861,7 @@ contract Presale is Ownable, ReentrancyGuard {
     }
 
     function updatebabyToken(IERC20 _baby) external onlyOwner{
-        require(address(_baby) != address(0), "OldVgdToken address should not be zero address");
+        require(address(_baby) != address(0), "BABY Token address should not be zero address");
         baby = _baby;
     }
 
