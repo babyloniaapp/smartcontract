@@ -81,8 +81,6 @@ interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-//  0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE mainnet
-// 	0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526 testnet
 contract ICO is Ownable {
     event BABYTOKENAMOUNT(uint256 amount);
 
@@ -91,7 +89,7 @@ contract ICO is Ownable {
 
     IERC20 private _baby; 
     address private _masterWallet;
-    uint256 public _bnbPrice;
+    uint256 public _swapRate;
     uint256 public _swapRateLowerLimit;
     uint256 public _swapRateUpperLimit;
     uint256 private _babyHardCap;
@@ -99,7 +97,11 @@ contract ICO is Ownable {
     uint256 private _endTime;       // Added _endTime variable
     bool public _presaleEnabled;    // Added _presaleEnabled variable
 
-    constructor(IERC20 baby, address masterWallet) {
+    
+//  0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE  chainLink mainnet(BNB/USD)
+// 	0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526  chainlink testnet(BNB/USD)
+
+    constructor(IERC20 baby, address masterWallet,address _chainlink) {
         require(address(baby) != address(0), "BABY cannot be zero address");
         require(masterWallet != address(0), "Masterwallet cannot be zero address");
         _baby = baby;
@@ -108,7 +110,7 @@ contract ICO is Ownable {
         _startTime = block.timestamp;
         _endTime = block.timestamp + (30 * 1 days);
         _presaleEnabled = true;
-        priceFeed = AggregatorV3Interface(0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526);
+        priceFeed = AggregatorV3Interface(_chainlink);
         _swapRateLowerLimit= 250*100;
         _swapRateUpperLimit= 350*100;
     }
@@ -120,10 +122,13 @@ contract ICO is Ownable {
 
     receive() external payable {
         uint256 swapRate=  getLatestPrice();
-        if(swapRate <=0){
+        if(swapRate > _swapRateUpperLimit){
             swapRate= _swapRateUpperLimit;
         }
-        _bnbPrice =swapRate;
+        else{
+            swapRate= _swapRateLowerLimit;
+        }
+        _swapRate =swapRate;
 
         if(!_presaleEnabled) revert();      // check if presale enabled, unless reverts the txn
         if (!(block.timestamp > _startTime && block.timestamp < _endTime)) revert();
@@ -168,13 +173,12 @@ contract ICO is Ownable {
         require(_etime > _startTime, "Cannot be zero");
         _endTime = _etime;
     }
-    // Here we can update the swapRate lower and upper limit.
-    function setswaplimit(uint256 _swapRatelowerlimit,uint256 _swapRateupperlimit) external onlyOwner{
-        _swapRateLowerLimit =_swapRatelowerlimit;
-        _swapRateUpperLimit = _swapRateupperlimit;
+    // Here we can update the BNB lower and upper limit.
+    function setSwaplimit(uint256 _swaplowerlimit,uint256 _swapupperlimit) external onlyOwner{
+        _swapRateLowerLimit =_swaplowerlimit;
+        _swapRateUpperLimit = _swapupperlimit;
 
     } 
-    
     function getBabyAddress() external view returns(address){
         return address(_baby);
     }
