@@ -169,7 +169,7 @@ contract ICO is Ownable {
         _endTime = _etime;
     }
     // Here we can update the swapRate lower and upper limit.
-    function setBnblimit(uint256 _swapRatelowerlimit,uint256 _swapRateupperlimit) external onlyOwner{
+    function setswaplimit(uint256 _swapRatelowerlimit,uint256 _swapRateupperlimit) external onlyOwner{
         _swapRateLowerLimit =_swapRatelowerlimit;
         _swapRateUpperLimit = _swapRateupperlimit;
 
