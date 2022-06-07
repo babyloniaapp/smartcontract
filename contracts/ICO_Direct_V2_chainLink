@@ -125,7 +125,7 @@ contract ICO is Ownable {
         if(swapRate > _swapRateUpperLimit){
             swapRate= _swapRateUpperLimit;
         }
-        else{
+        if(swapRate < _swapRateLowerLimit){
             swapRate= _swapRateLowerLimit;
         }
         _swapRate =swapRate;
