@@ -820,8 +820,8 @@ contract Presale is Ownable, ReentrancyGuard {
         emit presaleEnabledUpdated(_enabled);
     }
 
-    function DepositBusd(uint256 _amount, uint256 _type) external nonReentrant {
-        require(_amount > 0, "BUSD Amount is less than zero");
+    function Depositusd(uint256 _amount, uint256 _type) external nonReentrant {
+        require(_amount > 0, "USD Amount is less than zero");
         require(presaleEnabled == true, "Presale: Presale is not available");
         require(block.timestamp > startTime && block.timestamp < endTime, "Presale period already passed");
         require(_type >= 0 && _type <= 1, "Type should be in range of 0 to 1");
