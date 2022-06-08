@@ -871,14 +871,14 @@ contract Presale is Ownable, ReentrancyGuard {
         require(address(_newWalletAddr) != address(0), "Wallet address should not be zero address");
         masterWallet = _newWalletAddr;
     }
-
-    function delayPresaleEndTime(uint256 _delaydays) external onlyOwner {
-        require(_delaydays > 0, "Should be more than 1");
-        endTime = endTime + (_delaydays * 1 days);
-    }
     function updateHardCap(uint256 _hardcap) external onlyOwner{
         _hardCap= _hardcap;
     }
+    function setStartTime(uint256 _time) external onlyOwner {
+        require(_time != 0, "Cannot be zero");
+        startTime = _time;
+    }
+
     function setEndTime(uint256 _etime) external onlyOwner {
         require(_etime > startTime, "Cannot be zero");
         endTime = _etime;
