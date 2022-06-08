@@ -804,7 +804,7 @@ contract Presale is Ownable, ReentrancyGuard {
         totalDepositedBusdBalance = 0;
         _hardCap= 100000;
         startTime = block.timestamp;
-        endTime = block.timestamp + (35 * 1 days);
+        endTime = block.timestamp + (30 * 1 days);
    }
 
     function depositedUser() external view returns (uint256) {
