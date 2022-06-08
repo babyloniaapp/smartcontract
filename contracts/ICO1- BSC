@@ -784,7 +784,7 @@ contract Presale is Ownable, ReentrancyGuard {
     address[] public investors;
 
     address public masterWallet;
-    uint256 public totalDepositedBusdBalance;
+    uint256 public totalDepositedusdBalance;
     uint256 public _hardCap;
 
     uint256 public depositRate = 100; // 1 busd = 100 * baby
@@ -805,7 +805,7 @@ contract Presale is Ownable, ReentrancyGuard {
         baby = _baby;
         masterWallet = _masterWallet;
 
-        totalDepositedBusdBalance = 0;
+        totalDepositedusdBalance = 0;
         _hardCap= 100000;
         startTime = block.timestamp;
         endTime = block.timestamp + (30 * 1 days);
@@ -824,7 +824,7 @@ contract Presale is Ownable, ReentrancyGuard {
         emit presaleEnabledUpdated(_enabled);
     }
 
-    function DepositBusd(uint256 _amount, uint256 _type) external nonReentrant {
+    function Depositusd(uint256 _amount, uint256 _type) external nonReentrant {
         require(_amount > 0, "BUSD Amount is less than zero");
         require(presaleEnabled == true, "Presale: Presale is not available");
         require(block.timestamp > startTime && block.timestamp < endTime, "Presale period already passed");
@@ -854,7 +854,7 @@ contract Presale is Ownable, ReentrancyGuard {
 
         baby.safeTransferFrom(masterWallet, msg.sender, babyTokenAmount);
 
-        totalDepositedBusdBalance = totalDepositedBusdBalance + _amount.div(10 ** _tokenDecimals);
+        totalDepositedusdBalance = totalDepositedusdBalance + _amount.div(10 ** _tokenDecimals);
         if(deposits[msg.sender] == 0) {
             investors.push(msg.sender);
         }
