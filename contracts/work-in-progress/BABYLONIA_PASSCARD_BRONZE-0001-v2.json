@@ -1,0 +1,13 @@
+{
+  "name": "Babylonia PASS CARD",
+  "description": "PASS CARD is a utility token for Babylonia platform, to offer benefits and extra features to the player, holders offer to buy tickets of the games at a discounted rate. Also holder can unlock a RARE avatar.",
+  "image": "https://gateway.pinata.cloud/ipfs/QmaTCBZ1jDLPimh3hmqAj4r43Q89K4m1u4cuzcMxNcnAXf",
+  "external_url": "https://gateway.pinata.cloud/ipfs/QmaTCBZ1jDLPimh3hmqAj4r43Q89K4m1u4cuzcMxNcnAXf",
+  "attributes": [
+    {
+      "trait_type": "Class",
+      "value": "BRONZE"
+    }
+    
+  ]
+}
