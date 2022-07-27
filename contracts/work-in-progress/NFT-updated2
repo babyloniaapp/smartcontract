@@ -37,7 +37,7 @@ contract BABYNFT is ERC721, Ownable {
 
     // ipfs://QmduJo1o6YUjBEeVh3uXP3kLRs787fihsq7eXZnv9K7Hqw    babylonia  by me
 
-    // ipfs://QmQJw8CdUNrQnYH7SFKZQC6hG8GaLcpfiq5YTVJoY4oGc6    Jerry base Uri cid
+    // ipfs://QmQJw8CdUNrQnYH7SFKZQC6hG8GaLcpfiq5YTVJoY4oGc6    base Uri cid
 
     struct Details {
         address users;
