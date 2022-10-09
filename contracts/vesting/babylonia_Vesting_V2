@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
+// 0xbc4231929f7254f5b588C6647D40110777eB9c1c   mainnet
+
 /**
  * @title TokenVesting
  */
@@ -44,6 +46,8 @@ contract TokenVesting is Ownable, ReentrancyGuard{
     mapping(bytes32 => VestingSchedule) private vestingSchedules;
     uint256 private vestingSchedulesTotalAmount;
     mapping(address => uint256) private holdersVestingCount;
+    mapping(address => bytes32[]) public holdersVestigScheduleIds;
+
 
     event Released(uint256 amount);
     event Revoked();
@@ -180,6 +184,7 @@ contract TokenVesting is Ownable, ReentrancyGuard{
         vestingSchedulesIds.push(vestingScheduleId);
         uint256 currentVestingCount = holdersVestingCount[_beneficiary];
         holdersVestingCount[_beneficiary] = currentVestingCount.add(1);
+        holdersVestigScheduleIds[_beneficiary].push(vestingScheduleId);
     }
 
     /**
